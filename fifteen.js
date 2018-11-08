@@ -1,24 +1,11 @@
 /* 								Extra Features Added to be marked
-	
-	- Added checkboxes to allow the user to enable or disable extra functionalities in the game
-		This feature currently allows the user to select if they want to enable easy mode or if
-		they want to change the picture of the puzzle when it is being shuffled.
 
-	- Added a feature to change the background image of the puzzle using a function called changePic()
-		If the user selects the change picture checkbox, then the picture of the puzzle is changed to 
-		currently any 1 of the 4 added background pictures before being shuffled.
 
 	- Added a easy mode feature 
 		This mode allows the user to swap any piece to the empty space which makes the game way easier.
-
-	- Added game logic to check if the user has won the game
-		This feature will check the board status and prompt the user if they have won the game.
-
-	- Added animation for moving the puzzle pieces
-	 	This feature causes the pieces to move smoothly across the user's screen when they pick a piece to swap.
+		
 */
 
-"use strict"; // Added to make the code more JSLint compliant
 window.onload = function()
 {
 	var puzzlearea;
@@ -41,28 +28,19 @@ window.onload = function()
 	initializeGrid();
 	shufflebutton.onclick = shufflePieces;
 	
-	// Used to initialize the validMoves array with possible moves
-	calcValidMoves();
 
 
-	// All function definitions below
-
-	// Used to initialize the grid when the game first starts
+	// the function below is used to set up grid when the game first starts
 	function initializeGrid()
 	{
-		// This for-loop arranges the numbers into a puzzle grid and 
-		// attaches event-handler functions to make the game logic work
 		for (var i=0; i<squares.length; i++)
 		{
-			// Assigns the puzzlepiece css class styling to each of the pieces 
+			// Assigns each of the div elements css class styling to each of the pieces in the grid game
 			squares[i].className = "puzzlepiece";
-			
-			// The image is manually set to the default through this line of code even though
-			// it should be imported
-			//squares[i].style.backgroundImage = "url('background.jpg')";
 
-			// Used to arrange the pieces into a grid formation
+			//setting up grid formation
 			squares[i].style.left = (i % 4 * 100) + "px";
+			
 			squares[i].style.top = (parseInt(i / 4) * 100) + "px";
 
 			// Evaluates to "-XXX px -YYY px" to position the image on the squares using X and Y coordinates
@@ -118,7 +96,7 @@ window.onload = function()
 		}
 	}
 
-	// Function used to shuffle pieces on the grid when called
+	// Function used to shuffle puzzle pieces 
 	function shufflePieces() 
 	{
 		var rndNum;
@@ -302,78 +280,11 @@ window.onload = function()
 		}
 		return false;	
 	}
-
-	// Checks if the puzzle pieces are in the correct positions 
-	// to prompt the user that they have won the game
-	function checkWin() 
-	{
-		var win = true;
-
-		// Checks if the empty space is in the bottom right corner.
-		// If not, then the for loop doesn't bother waste time executing
-		if ((emptySpaceX === "300px") && (emptySpaceY === "300px")) 
-		{
-			for (var i = 0; i < squares.length; i++) 
-			{
-				if ((squares[i].style.left !== (parseInt((i % 4) * 100) + "px")) &&
-					(squares[i].style.top !== (parseInt((i / 4) * 100) + "px")))
-				{
-					win = false;
-					break;
-				}
-			}
-			if (win) 
-			{
-				gameWon();
-			}
-		}
-	}
-
-	// This prompts the user that they have won the game. Fancy game-winning 
-	// graphics, effects and animations to be added later.
-	function gameWon()
-	{
-		alert("You Win, Congrats!");
-	} 
-
+	
+	
 	// Used to randomly change the applied background picture
-	function changePic() 
-	{
-		var listOfPics = ["background.jpg","2 Zelda.jpg","3 Zelda.jpg","4 Mario.jpg"];
-		var currentPic = squares[0].style.backgroundImage.slice(5, -2); // Sliced to remove 'url("")' from it
-		var rndNum = Math.floor(Math.random() * listOfPics.length);
 
-		// This if statement was added because when the program is first run and the 
-		// puzzlepiece css class is applied to each of the squares, the background image
-		// property is an empty string. So this if statement was added to prevent the changepic
-		// function from changing it to the same default mario pic when you first hit shuffle. 
-		if (currentPic.length === 0)
-		{
-			currentPic = "background.jpg";
-		}
-		
-		// Used to prevent the random number from pointing
-		// to the same pic that's already in use	
-		if (currentPic === listOfPics[rndNum]) 
-		{
-			// Runs until the rndNum points to a different pic
-			while (currentPic === listOfPics[rndNum]) 
-			{
-				rndNum = Math.floor(Math.random() * listOfPics.length);	
-			}
-		}
 
-		// Applies the new pic to each square
-		for (var x = 0; x < squares.length; x++)
-		{
-			squares[x].style.backgroundImage = "url('" + listOfPics[rndNum] +"')";
-		}
-		
-	}
-
-	// Used to initialize the checkboxes and add them to the 'controls' div in the html doc
-	// This function was solely done to reduce the amount of code up above when initializing 
-	// the program.
 	function setUpCheckboxes()
 	{
 		// Creates the text label for the checkbox
@@ -407,5 +318,39 @@ window.onload = function()
 	    // before the checkbox control itself 		
 		document.getElementById("controls").appendChild(easyModeChkBoxlabel);
 		document.getElementById("controls").appendChild(easyModeChkBox);
+	}
+	
+		function changePic() 
+	{
+		var listOfPics = ["tom&jerry.jpg","tom&jerry2.jpg"];
+		var currentPic = squares[0].style.backgroundImage.slice(5, -2); // Sliced to remove 'url("")' from it
+		var rndNum = Math.floor(Math.random() * listOfPics.length);
+
+		// This if statement was added because when the program is first run and the 
+		// puzzlepiece css class is applied to each of the squares, the background image
+		// property is an empty string. So this if statement was added to prevent the changepic
+		// function from changing it to the same default mario pic when you first hit shuffle. 
+		if (currentPic.length === 0)
+		{
+			currentPic = "background.jpg";
+		}
+		
+		// Used to prevent the random number from pointing
+		// to the same pic that's already in use	
+		if (currentPic === listOfPics[rndNum]) 
+		{
+			// Runs until the rndNum points to a different pic
+			while (currentPic === listOfPics[rndNum]) 
+			{
+				rndNum = Math.floor(Math.random() * listOfPics.length);	
+			}
+		}
+
+		// Applies the new pic to each square
+		for (var x = 0; x < squares.length; x++)
+		{
+			squares[x].style.backgroundImage = "url('" + listOfPics[rndNum] +"')";
+		}
+		
 	}
 };
