@@ -1,9 +1,10 @@
-/* 								Extra Features Added to be marked
+	
+/*
+	 Extras Implemented
+	 ** IF WIn
+	 ** Change pic
+	 
 
-
-	- Added a easy mode feature 
-		This mode allows the user to swap any piece to the empty space which makes the game way easier.
-		
 */
 
 window.onload = function()
@@ -14,33 +15,32 @@ window.onload = function()
 	var validMoves=[];
 	var emptySpaceX = '300px'; // Initial values for the empty space
 	var emptySpaceY = '300px';
-	var changePicChkBoxlabel;
-	var changePicChkBox;
-	var easyModeChkBoxlabel;
-	var easyModeChkBox;
+	var changePicButton;
+	
+	// Function Calling
 
-	setUpCheckboxes();
-
+	setUpButton();
+	
 	puzzlearea = document.getElementById("puzzlearea");
 	squares = puzzlearea.getElementsByTagName("div");
 	shufflebutton = document.getElementById("shufflebutton");
 	
 	initializeGrid();
 	shufflebutton.onclick = shufflePieces;
-	
+	calcValidMoves();
+
+	// All function definitions below
 
 
-	// the function below is used to set up grid when the game first starts
 	function initializeGrid()
 	{
 		for (var i=0; i<squares.length; i++)
 		{
-			// Assigns each of the div elements css class styling to each of the pieces in the grid game
+			// Assigns the puzzlepiece css class styling to each of the pieces 
 			squares[i].className = "puzzlepiece";
 
-			//setting up grid formation
+			// Used to arrange the pieces into a grid formation
 			squares[i].style.left = (i % 4 * 100) + "px";
-			
 			squares[i].style.top = (parseInt(i / 4) * 100) + "px";
 
 			// Evaluates to "-XXX px -YYY px" to position the image on the squares using X and Y coordinates
@@ -52,15 +52,7 @@ window.onload = function()
 			// Used to move a piece if it can be moved when clicked
 			squares[i].onclick = function()
 			{
-				// If easy mode is enabled, then it allows the user to move 
-				// any piece to the empty space 
-				if (easyModeChkBox.checked) 
 				{
-					animatedSwitchPieces(parseInt(this.innerHTML-1));
-				}
-				else 
-				{
-					// Code to check if the piece can be moved
 					if (isValidMove(this.style.left, this.style.top))
 					{
 						animatedSwitchPieces(parseInt(this.innerHTML-1));
@@ -69,15 +61,9 @@ window.onload = function()
 			};
 			
 
-			// Used to show the user if a piece can be moved when hovered
-			// by changing the colour of the piece
+            // function implemented to show movable piece by changing its color
 			squares[i].onmouseover = function()
 			{
-				if (easyModeChkBox.checked) 
-				{
-					this.classList.add("movablepiece");
-				}
-				else 
 				{
 					// Code to check if the piece can be moved
 					if (isValidMove(this.style.left, this.style.top))
@@ -87,8 +73,7 @@ window.onload = function()
 				}
 			};
 
-			// Used to revert the colour of the piece back to default 
-			// when the user's cursor leaves the piece
+			// Used to return piece to default when mouse is not hovering
 			squares[i].onmouseout = function()
 			{
 				this.classList.remove("movablepiece");
@@ -96,66 +81,59 @@ window.onload = function()
 		}
 	}
 
-	// Function used to shuffle puzzle pieces 
+
+	// Function used to shuffle pieces on the grid when called the shuffle button is clicked
 	function shufflePieces() 
 	{
+		// declaring local variable
 		var rndNum;
 		
-		// Changes the picture before randomizing if changePicChkBox is true
-		if (changePicChkBox.checked) 
-			{
-				changePic();
-			}
+		// Changes the picture before randomizing if changePicChkBox is clicked
+		// 	changePicButton.onclick = changePic();  
+		//	{
+		//		changePic();
+		//	}
 		
-		// This loop moves the pieces randomly 150 times when executed
+		// for loop implemented to move the pieces randomly 150 times when the shuffle button is clicked
 		for (var i = 0; i < 150; i++) 
 		{
 			// Used to randomly select a piece to move from the valid moves array
 			rndNum = Math.floor(Math.random() * validMoves.length);
 
-			// Searches through the puzzle pieces array for the randomly selected piece above to move.
-			// It searches based on the piece's X and Y coordinates through the puzzle pieces array.
-			// When the correct piece is found, this for loop terminates and it goes back into the main 
-			// for loop for another iteration until it completes enough random movements
+			//Second for loop to runs until it completes maximum random movements
 			for (var x = 0; x < squares.length; x++)
 			{
 				if ((validMoves[rndNum][0] === parseInt(squares[x].style.left)) && 
 					(validMoves[rndNum][1] === parseInt(squares[x].style.top)))
 				{
-					// When the piece is found, it is moved and the valid moves are
-					// recalculated for another iteration of randomly selected movements
+
 					switchPieces(parseInt(squares[x].innerHTML-1));
 					calcValidMoves();
 
-					//animatedSwitchPieces(parseInt(squares[x].innerHTML-1));
-					//calcValidMoves();
-					break; // Terminates this for loop when the piece has been moved
+				// Terminates for loop when a specefic piece has been moved
+					break; 
 				}
 			}
 		}
 	}
 
+
 	// Animation for moving the pieces
 	function animatedSwitchPieces(puzzlePiece)
 	{
-		var posX = squares[puzzlePiece].style.left;
-	  	var posY = squares[puzzlePiece].style.top;	  	
-	  	var xFinished = (squares[puzzlePiece].style.left === emptySpaceX); // Evaluates to either true or false
+		var positionX = squares[puzzlePiece].style.left;
+	  	var positionY = squares[puzzlePiece].style.top;	  	
+	  	var xFinished = (squares[puzzlePiece].style.left === emptySpaceX); 
 	  	var yFinished = (squares[puzzlePiece].style.top === emptySpaceY);
 	  	
-	  	var movement = setInterval(MovePiece, 1); // Executes the animation
-
-	  	// Animation function to be used in setInterval. This functions works by incrementing or decrementing 
-	  	// the X and Y coordinates by 10 pixels until they have reached their new coordinates at the empty 
-	  	// space's X and Y coordinates. This function is used in the setInterval statement above which 
-	  	// executes this program every 1 millisecond until it reaches the clearInterval(movement) statement
-	  	// which signals the end of the loop and terminates the animation.
+	  	var movement = setInterval(MovePiece, 1); 
+	 
 		function MovePiece() 
 		{
 			if ((xFinished) && (yFinished))
 			{
-				emptySpaceX = posX;
-				emptySpaceY = posY;
+				emptySpaceX = positionX;
+				emptySpaceY = positionY;
 				clearInterval(movement);
 				calcValidMoves();
 				checkWin();
@@ -204,10 +182,7 @@ window.onload = function()
 	}
 
 	// This switches the pieces by swapping the X and Y coordinates 
-	// between the empty space and the puzzle piece passed as an argument.
-	// This was used in previous versions before the animated version of
-	// this function was created. This function is still used in the shuffle
-	// function however, so thats's why it's still here.
+
 	function switchPieces(puzzlePiece)
 	{
 		// Swap X positions
@@ -221,43 +196,33 @@ window.onload = function()
 		emptySpaceY = temp;
 	}
 
-	// Checks in a clockwise manner for all the valid moves
-	// in relation to the position of the empty space and
-	// stores the valid moves' X and Y coordinates in the
-	// validMoves array for later use in the game
+	// Checks for valid moves and stores the valid moves' X and Y coordinates in an array
 	function calcValidMoves()
 	{
-		// Converted the position of the empty space variables
-		// to integers to be able to easily manipulate them later
+		// Converting empty space variables to integers for easy manilipulation
 		var tempX = parseInt(emptySpaceX);
 		var tempY = parseInt(emptySpaceY);
 
-		// Resets the array and clears the previous valid moves
 		validMoves = [];
 
-		// Check Up
-		// Check if there's a piece above the empty space
+		// Check if there's a piece above the empty space that can be moved
 		if (tempY != 0)
 		{
 			validMoves.push([tempX, tempY - 100]);
 		}
 
-		// Check Right
-		// Check if there's a piece to the right of the empty space
+		// Check if there's a piece to the right of the empty space that can be moved
 		if (tempX != 300)
 		{
 			validMoves.push([tempX + 100, tempY]);
 		}
-
-		// Check Down 
-		// Checks if there's a piece below the empty space
+		// Checks if there's a piece below the empty space that can be moved
 		if (tempY != 300)
 		{
 			validMoves.push([tempX, tempY + 100]);
 		}
 
-		// Check Left
-		// Checks if there's a piece to the left of the empty space
+		// Checks if there's a piece to the left of the empty space that can be moved
 		if (tempX != 0)
 		{
 			validMoves.push([tempX - 100, tempY]);
@@ -280,56 +245,58 @@ window.onload = function()
 		}
 		return false;	
 	}
+
+	// Checks if the puzzle pieces are in the correct positions 
+	// to prompt the user that they have won the game
 	
 	
-	// Used to randomly change the applied background picture
-
-
-	function setUpCheckboxes()
+	
+	
+	function setUpButton()
 	{
 		// Creates the text label for the checkbox
-		changePicChkBoxlabel = document.createElement('label');
-		changePicChkBoxlabel.htmlFor = "changePicChkBox1";
-		changePicChkBoxlabel.appendChild(document.createTextNode('Change picture when shuffled'));
+		changePicButton = document.createElement('button');
+		changePicButton.htmlFor = "changePicChkBox1";
+		changePicButton.appendChild(document.createTextNode('Click to Change picture'));
 
-		//Creates the checkbox
-		changePicChkBox = document.createElement("input");
-	    changePicChkBox.type = "checkbox";
-	    changePicChkBox.id = "changePicChkBox1";
-	    
-	    // Adds the label to the controls div in the html code before
-	    // appending the checkbox so that the text instructions appear 
-	    // before the checkbox control itself 		
-		document.getElementById("controls").appendChild(changePicChkBoxlabel);
-		document.getElementById("controls").appendChild(changePicChkBox);
+		document.getElementById("controls").appendChild(changePicButton);
 
-		// Creates the text label for the checkbox
-		easyModeChkBoxlabel = document.createElement('label');
-		easyModeChkBoxlabel.htmlFor = "changePicChkBox1";
-		easyModeChkBoxlabel.appendChild(document.createTextNode('Easy Mode'));
-
-		//Creates the checkbox
-		easyModeChkBox = document.createElement("input");
-	    easyModeChkBox.type = "checkbox";
-	    easyModeChkBox.id = "easyModeChkBox1";
-	    
-	    // Adds the label to the controls div in the html code before
-	    // appending the checkbox so that the text instructions appear 
-	    // before the checkbox control itself 		
-		document.getElementById("controls").appendChild(easyModeChkBoxlabel);
-		document.getElementById("controls").appendChild(easyModeChkBox);
 	}
 	
-		function changePic() 
+	
+	function checkWin() 
 	{
-		var listOfPics = ["tom&jerry.jpg","tom&jerry2.jpg"];
+		var iswinner = true;
+
+
+		if ((emptySpaceX === "300px") && (emptySpaceY === "300px")) 
+		{
+			for (var i = 0; i < squares.length; i++) 
+			{
+				if ((squares[i].style.left !== (parseInt((i % 4) * 100) + "px")) &&
+					(squares[i].style.top !== (parseInt((i / 4) * 100) + "px")))
+				{
+					iswinner = false;
+					break;
+				}
+			}
+			if (iswinner) 
+			
+			{
+				alert("You Win, Congrats! My Friend (-; ");
+			}
+		}
+	}
+
+
+
+	// Used to randomly change the applieFd background picture
+	function changePic() 
+	{
+		var listOfPics = ["tom&jerry2.jpg","tom&jerry.jpg"];
 		var currentPic = squares[0].style.backgroundImage.slice(5, -2); // Sliced to remove 'url("")' from it
 		var rndNum = Math.floor(Math.random() * listOfPics.length);
 
-		// This if statement was added because when the program is first run and the 
-		// puzzlepiece css class is applied to each of the squares, the background image
-		// property is an empty string. So this if statement was added to prevent the changepic
-		// function from changing it to the same default mario pic when you first hit shuffle. 
 		if (currentPic.length === 0)
 		{
 			currentPic = "background.jpg";
@@ -353,4 +320,10 @@ window.onload = function()
 		}
 		
 	}
+
+
 };
+
+
+
+
